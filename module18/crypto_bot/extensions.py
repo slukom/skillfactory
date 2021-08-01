@@ -24,7 +24,7 @@ class CryptoConverter:
         try:
             amount = float(amount)
         except ValueError:
-            raise ConvertionException(f'Не удалось обработать количество {amount}.\nИспользуйте только цифры и при' \
+            raise ConvertionException(f'Не удалось обработать количество {amount}.\nИспользуйте только цифры и при ' \
             'необходимости точку в качестве десятичного разделителя')
 
         r = requests.get(f'https://min-api.cryptocompare.com/data/price?fsym={quote_ticker}&tsyms={base_ticker}')
