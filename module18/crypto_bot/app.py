@@ -52,10 +52,10 @@ def get_price(message: telebot.types.Message):
     except Exception as e:
         bot.reply_to(message, f'Не удалось обработать команду\n{e}')
     else:
-        incline_quote = DeclensionByCases(quote, float(amount))
-        incline_base = DeclensionByCases(base, float(total_base))
-        quote = incline_quote.incline()
-        base = incline_base.incline()
+        inclined_quote = DeclensionByCases(quote, float(amount))
+        inclined_base = DeclensionByCases(base, float(total_base))
+        quote = inclined_quote.incline()
+        base = inclined_base.incline()
         text = f'{amount} {quote} = {total_base} {base}'
         bot.send_message(message.chat.id, text)
 
