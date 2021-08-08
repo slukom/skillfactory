@@ -18,7 +18,7 @@ while True:
     else:
         break
 
-sum = 0
+amount = 0
 
 for i in range(n):
     print()
@@ -33,12 +33,12 @@ for i in range(n):
             break
 
     if 18 <= age < 25:
-        sum += 990
+        amount += 990
     if age >= 25:
-        sum += 1390
+        amount += 1390
 
 if n > 3:
-    sum = 0.9 * sum
-    print(f'\nОбщая стоимость за {n} билетов с учетом скидки составляет: {sum} руб.')
+    amount = 0.9 * amount
+    print(f'\nОбщая стоимость за {n} билетов с учетом скидки составляет: {amount} руб.')
 else:
-    print(f'\nОбщая стоимость за {n} билетов составляет: {sum} руб.')
+    print(f'\nОбщая стоимость за {n} билетов составляет: {amount} руб.')
