@@ -8,7 +8,7 @@ def python_string_slicer(str):
         return str[0:50]
 
 
-def generate_id(val):
+def generate_id(val):  # вынесем генерацию названий в отдельную функцию
     return "params: {0}".format(str(val))
 
 
@@ -27,5 +27,5 @@ def param_fun_generated(request):
 def test_python_string_slicer_generated(param_fun_generated):
     (input, expected_output) = param_fun_generated
     result = python_string_slicer(input)
-    print("Входная строка: {0}\nВыходная строка: {1}\nОжидаемое значение: {2}".format(input, result, expected_output))
+    print("\nВходная строка: {0}\nВыходная строка: {1}\nОжидаемое значение: {2}".format(input, result, expected_output))
     assert result == expected_output
