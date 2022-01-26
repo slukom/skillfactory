@@ -1,0 +1,2 @@
+python3 -m pytest -v --driver Firefox --driver-path /home/slukom/PycharmProjects/geckodriver module24/test_for_google.py
+python3 -m pytest -v --driver Chrome --driver-path /home/slukom/PycharmProjects/chromedriver module24/test_for_google.py
