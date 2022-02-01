@@ -22,7 +22,7 @@ from settings import valid_email, valid_password, valid_login
 
 @pytest.fixture(autouse=True)
 def testing():
-    pytest.driver = webdriver.Chrome('/home/slukom/PycharmProjects/chromedriver')
+    pytest.driver = webdriver.Chrome('../drivers/chromedriver')
     # устанавливаем неявное ожидание
     pytest.driver.implicitly_wait(10)
     # Увеличиваем размер окна браузера на весь экран
