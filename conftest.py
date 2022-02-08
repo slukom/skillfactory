@@ -2,25 +2,16 @@
 # использовать фикстуры. Их стоит вставлять в файл conftest.py, который находится в корневой директории тестового
 # проекта.
 
-import uuid
 import pytest
-import time
-from selenium import webdriver
-
-@pytest.fixture
-def firefox_options(firefox_options):
-    firefox_options.binary = '/home/slukom/PycharmProjects/geckodriver'
-    firefox_options.add_argument('-foreground')  # возможность запуска в фоновом или реальном режиме.
-    # В нашем случае выбран последний. Для фонового укажите ‘-background’.
-    firefox_options.set_preference('browser.anchor_color', '#FF0000')  # выбор цвета подложки браузера
-    return firefox_options
+import uuid
 
 @pytest.fixture
 def chrome_options(chrome_options):
-    chrome_options.binary_location = '/home/slukom/PycharmProjects/chromedriver' # путь к exe браузера (включая сам исполняемый файл)
-    #chrome_options.add_extension('/path/to/extension.crx')  # включение дополнений браузера
-    chrome_options.add_argument('--kiosk')
-    #chrome_options.set_headless(True)  # режим запуска без пользовательского интерфейса, так называемый headless-режимом («без головы»)
+    # chrome_options.binary_location = '/usr/bin/google-chrome-stable'
+    # chrome_options.add_argument('--headless')
+    chrome_options.add_argument('--no-sandbox')
+    chrome_options.add_argument('--log-level=DEBUG')
+
     return chrome_options
 
 @pytest.hookimpl(hookwrapper=True, tryfirst=True)
@@ -63,34 +54,54 @@ def web_browser(request, selenium):
             pass # just ignore any errors here
 
 
-def test_petfriends(web_browser):
-   # Open PetFriends base page:
-   web_browser.get("https://petfriends1.herokuapp.com/")
+def get_test_case_docstring(item):
+    """ This function gets doc string from test case and format it
+        to show this docstring instead of the test case name in reports.
+    """
 
-   time.sleep(5)  # just for demo purposes, do NOT repeat it on real projects!
+    full_name = ''
 
-   # click on the new user button
-   btn_newuser = web_browser.find_element_by_xpath("//button[@onclick=\"document.location='/new_user';\"]")
-   btn_newuser.click()
+    if item._obj.__doc__:
+        # Remove extra whitespaces from the doc string:
+        name = str(item._obj.__doc__.split('.')[0]).strip()
+        full_name = ' '.join(name.split())
 
-   # click existing user button
-   btn_exist_acc = web_browser.find_element_by_link_text(u"У меня уже есть аккаунт")
-   btn_exist_acc.click()
+        # Generate the list of parameters for parametrized test cases:
+        if hasattr(item, 'callspec'):
+            params = item.callspec.params
 
-   # add email
-   field_email = web_browser.find_element_by_id("email")
-   field_email.clear()
-   field_email.send_keys("<your_email>")
+            res_keys = sorted([k for k in params])
+            # Create List based on Dict:
+            res = ['{0}_"{1}"'.format(k, params[k]) for k in res_keys]
+            # Add dict with all parameters to the name of test case:
+            full_name += ' Parameters ' + str(', '.join(res))
+            full_name = full_name.replace(':', '')
 
-   # add password
-   field_pass = web_browser.find_element_by_id("pass")
-   field_pass.clear()
-   field_pass.send_keys("<your_pass>")
+    return full_name
 
-   # click submit button
-   btn_submit = web_browser.find_element_by_xpath("//button[@type='submit']")
-   btn_submit.click()
 
-   time.sleep(5)  # just for demo purposes, do NOT repeat it on real projects!
+def pytest_itemcollected(item):
+    """ This function modifies names of test cases "on the fly"
+        during the execution of test cases.
+    """
 
-   assert web_browser.current_url == 'https://petfriends1.herokuapp.com/all_pets',"login error"
+    if item._obj.__doc__:
+        item._nodeid = get_test_case_docstring(item)
+
+
+def pytest_collection_finish(session):
+    """ This function modified names of test cases "on the fly"
+        when we are using --collect-only parameter for pytest
+        (to get the full list of all existing test cases).
+    """
+
+    if session.config.option.collectonly is True:
+        for item in session.items:
+            # If test case has a doc string we need to modify it's name to
+            # it's doc string to show human-readable reports and to
+            # automatically import test cases to test management system.
+            if item._obj.__doc__:
+                full_name = get_test_case_docstring(item)
+                print(full_name)
+
+        pytest.exit('Done!')
